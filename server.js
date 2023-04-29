@@ -83,3 +83,4 @@ app.delete('/api/notes', (req, res) => console.log('Note has been deleted'));
 app.listen(PORT, () =>
   console.log(`App listening at http://localhost:${PORT} 🚀`)
 );
+
