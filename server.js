@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const uniqueId = require('uniqid');
+let dbData = require('./db/db.json');
 
 const PORT=3001;
 const app = express();
@@ -10,6 +11,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'));
 
+//localhost:3001/
 app.get('/', (req, res) => 
   res.sendFile(path.join(__dirname, '/public/index.html'))
 );
@@ -22,20 +24,19 @@ app.get('/notes', (req, res) =>
 
 // GET request for notes
 app.get('/api/notes', (req, res) => {
-  // send a message to the client
-  res.json(`${req.method} request received to open notes page`);
+
   // Log our request to the terminal
   console.log(`${req.method} request received to open notes page`);
 
-  //?? `GET /api/notes` should read the `db.json` file and return all saved notes as JSON.
-
+  //Read the db.json file and return all saved notes as JSON.
+  dbData = JSON.parse(fs.readFileSync('./db/db.json', 'utf-8'));
+  res.json(dbData);
 
 });
 
 
-//??? * `POST /api/notes` should receive a new note to save on the request body, add it to the `db.json` file, and then return the new note to the client. You'll need to find a way to give each note a unique id when it's saved (look into npm packages that could do this for you).
-
 // POST request to add a note
+// can only ever have one res.json inside a function
 app.post('/api/notes', async (req, res) => {
   try{
     // Log that a POST request was received
@@ -52,7 +53,7 @@ app.post('/api/notes', async (req, res) => {
     const newNote = {
       title, 
       text, 
-      note_id: uniqueId()
+      id: uniqueId()
     };
 
     const rawData = await fs.promises.readFile('./db/db.json');
@@ -86,7 +87,22 @@ app.post('/api/notes', async (req, res) => {
 })
 
 // DELETE request to delete note
-app.delete('/api/notes/:id', (req, res) => console.log(`Note ${newNote.title.id} has been deleted`));
+app.delete('/api/notes/:id', (req, res) => {
+  let notesToKeep = [];
+  for (let i=0; i<dbData.length; i++) {
+    // if the dbData[i].id isn't equal to the id of the note selected
+    // push that id into the new array (so recreate the array with all notes but the one selected for deletion)
+    if (dbData[i].id != req.params.id) {
+      notesToKeep.push(dbData[i])
+    }
+  }
+
+  dbData = notesToKeep;
+  fs.writeFileSync('./db/db.json', JSON.stringify(dbData));
+  res.json(dbData);
+
+  console.log(`Note ${newNote.title.id} has been deleted`);
+});
 
 
 app.listen(PORT, () =>
