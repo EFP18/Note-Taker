@@ -125,6 +125,11 @@ const renderNoteList = async (notes) => {
 
   let noteListItems = [];
 
+  // if (!Array.isArray(jsonNotes)) {
+  //   console.error('Invalid data format: ', jsonNotes);
+  //   return;
+  // }
+
   // Returns HTML element with or without a delete button
   const createLi = (text, delBtn = true) => {
     const liEl = document.createElement('li');

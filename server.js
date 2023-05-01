@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const uniqueId = require('uniqid');
 
 const PORT=3001;
 const app = express();
@@ -25,7 +26,14 @@ app.get('/api/notes', (req, res) => {
   res.json(`${req.method} request received to open notes page`);
   // Log our request to the terminal
   console.log(`${req.method} request received to open notes page`);
+
+  //?? `GET /api/notes` should read the `db.json` file and return all saved notes as JSON.
+
+
 });
+
+
+//??? * `POST /api/notes` should receive a new note to save on the request body, add it to the `db.json` file, and then return the new note to the client. You'll need to find a way to give each note a unique id when it's saved (look into npm packages that could do this for you).
 
 // POST request to add a note
 app.post('/api/notes', async (req, res) => {
@@ -43,7 +51,8 @@ app.post('/api/notes', async (req, res) => {
     // Variable for the object we will save for the notes
     const newNote = {
       title, 
-      text
+      text, 
+      note_id: uniqueId()
     };
 
     const rawData = await fs.promises.readFile('./db/db.json');
@@ -77,10 +86,9 @@ app.post('/api/notes', async (req, res) => {
 })
 
 // DELETE request to delete note
-app.delete('/api/notes', (req, res) => console.log('Note has been deleted'));
+app.delete('/api/notes/:id', (req, res) => console.log(`Note ${newNote.title.id} has been deleted`));
 
 
 app.listen(PORT, () =>
   console.log(`App listening at http://localhost:${PORT} 🚀`)
 );
-
