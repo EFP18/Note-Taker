@@ -1,7 +1,17 @@
 [
     {
-        "title": "ff",
-        "text": "ff",
-        "id": "j5e9960lhdwfhq7"
+        "title": "Work on SQL challenge",
+        "text": "SQL challenge",
+        "id": "j5e994klhdwudul"
+    },
+    {
+        "title": "Deploy project on Heroku",
+        "text": "Heroku",
+        "id": "j5e994klhdwumkn"
+    },
+    {
+        "title": "Review session",
+        "text": "Review",
+        "id": "j5e994klhdwuu1n"
     }
 ]
