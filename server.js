@@ -4,20 +4,27 @@ const fs = require('fs');
 const uniqueId = require('uniqid');
 let dbData = require('./db/db.json');
 
-const PORT=3001;
+const PORT= process.env.PORT || 3001;
 const app = express();
 
+// accepts json data from the front end and parses it for us
 app.use(express.json());
+// helps parse data from the front end that come in a different way
 app.use(express.urlencoded({extended: true}));
+// points express to the public folder and says all the files in that folder, send them statically to the front end. 
+// makes several app.get routes to help access the files we want
 app.use(express.static('public'));
 
 //localhost:3001/
+// req is the request from the client, res is what we do in the backend. 
+// the req object represents data that's been sent to us about the request
 app.get('/', (req, res) => 
   res.sendFile(path.join(__dirname, '/public/index.html'))
 );
 
 // GET request for notes page to open upon clicking the Get Started button
 app.get('/notes', (req, res) => 
+// Path.join() joins two different folder file paths. 
   res.sendFile(path.join(__dirname, 'public/notes.html'))
 );
 
@@ -65,12 +72,12 @@ app.post('/api/notes', async (req, res) => {
     notesData.push(newNote);
 
     // Convert the data to a string so we can save it
-    const noteString = JSON.stringify(notesData);
+    const noteString = JSON.stringify(notesData, null, 4);
 
     // Write the file using the fs library
     fs.writeFile(`./db/db.json`, noteString, (err) =>
       err
-        ?console.error(Err)
+        ?console.error(err)
         : console.log(`Notes for ${newNote.title} has been written to JSON file.`)
     );
 
@@ -105,6 +112,7 @@ app.delete('/api/notes/:id', (req, res) => {
 });
 
 
-app.listen(PORT, () =>
+app.listen(PORT, (err) => {
+  if (err) console.log(err);
   console.log(`App listening at http://localhost:${PORT} 🚀`)
-);
+});
